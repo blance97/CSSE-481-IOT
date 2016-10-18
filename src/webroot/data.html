@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <title>WebName</title>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--  Scripts-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home<span class="sr-only"></span></a></li>
+                <li class="active"><a href="/data.html">Data<span class="sr-only">(current)</span></a></li>
+                <li><a href="/data.html">Comparison<span class="sr-only">(current)</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <h1>Upload Data:</h1>
+    <form enctype="multipart/form-data" action="/upload/data" method="post">
+        <input id="image-file" type="file" />
+        <input type="submit" value="Submit">
+    </form>
+    <center>
+        <h1>Raw Data</h1></center>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
+            <th>Precipitation</th>
+            <tr>
+                <td>Oct 12 2016</td>
+                <td>50 deg/F</td>
+                <td>50%</td>
+                <td>59%</td>
+            </tr>
+            <tr>
+                <td>Oct 13 2016</td>
+                <td>80 deg/F</td>
+                <td>23%</td>
+                <td>40%</td>
+            </tr>
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+
+</html>

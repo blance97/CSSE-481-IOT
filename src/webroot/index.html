@@ -5,28 +5,47 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
     <title>WebName</title>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <!--  Scripts-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
     <script src="js/script.js"></script>
 
 </head>
 
 <body>
-  <ul class="list-inline">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Chart 1</a></li>
-        <li><a href="#">Chart 2</a></li>
-        <li><a href="#">Chart 3</a></li>
-    </ul>
+    <div>
+        <nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+                <li><a href="/data.html">Data<span class="sr-only">(current)</span></a></li>
+                  <li><a href="/data.html">Comparison<span class="sr-only">(current)</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    </form>
+    <center>
+        <h1> Graph of weather points</h1></center>
+
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Change View
+  <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Temperature</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Humidity</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Precipitation</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Wind Speed</a></li>
+        </ul>
+    </div>
+
     <div style="margin-top:100px; margin-left:30%">
-    <canvas id="canvas" height="750;" width="750px;"></canvas>
-    <br/><br/>
-    <button id="add-btn">Add Data</button>
-  </div>
+        <canvas id="canvas" height="750;" width="750px;"></canvas>
+        <br/><br/>
+        <button id="add-btn">Add Data</button>
+    </div>
+
 </body>
 
 </html>
