@@ -10,7 +10,7 @@
 
     <!--  Scripts-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="js/script.js"></script>
 
 </head>
@@ -21,30 +21,65 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
                 <li><a href="/data.html">Data<span class="sr-only">(current)</span></a></li>
-                  <li><a href="/data.html">Comparison<span class="sr-only">(current)</span></a></li>
+                <li><a href="/Comparison.html">Comparison<span class="sr-only">(current)</span></a></li>
             </ul>
         </nav>
     </div>
     </form>
     <center>
         <h1> Graph of weather points</h1></center>
-
-    <div class="dropdown">
-        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Change View
-  <span class="caret"></span></button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Temperature</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Humidity</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Precipitation</a></li>
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Wind Speed</a></li>
-        </ul>
+    <h3>Select Data To View</h3>
+    <select id="files" class="selectpicker" style="width:250px;" onchange="loadData1()">
+      </select>
+    <select id="data" class="selectpicker" style="width:250px;" onclick="loadData()">
+        <option value="Temp">Temperature</option>
+        <option value="Absolute_Pressure">Abs Pressure</option>
+        <option value="Relative_Pressure">Relative Pressure</option>
+        <option value="Humidity">Humidity</option>
+        <option value="Rain_Sensor_1">Rain Sensor 1</option>
+        <option value="Rain_Sensor_2">Rain Sensor 2</option>
+        <option value="Light_Sensor">Light Sensor</option>
+      </select>
+    <center><h1 id="wat"></h1></center>
+    <center><div id="myDiv" style="width: 1000px; height: 700px;"></center>
+        <!-- Plotly chart will be drawn inside this DIV -->
     </div>
+    <script>
 
-    <div style="margin-top:100px; margin-left:30%">
-        <canvas id="canvas" height="750;" width="750px;"></canvas>
-        <br/><br/>
-        <button id="add-btn">Add Data</button>
-    </div>
+    function loadData() {
+      var datas = $("#data").val()
+      console.log(datas)
+            var x1 = []
+            var y1 = []
+
+            var request = $.ajax({
+                type: 'GET',
+                url: '/getData/?data=' + datas,
+                async: false,
+                success: function(data) {
+                    var obj = jQuery.parseJSON(data)
+                    if (obj == null) {
+                        return
+                    }
+                    var array;
+                    $("#wat").html(datas)
+                    for (var i = 0; i < obj.length; i++) {
+                        x1.push(obj[i][datas])
+                        y1.push(i)
+                          console.log(x1[i])
+                    }
+                }
+            });
+
+            var trace1 = {
+                x: y1,
+                y: x1,
+                type: 'scatter'
+            };
+            var data = [trace1];
+            Plotly.newPlot('myDiv', data);
+          }
+    </script>
 
 </body>
 

@@ -3,46 +3,54 @@ package main
 import (
 	"database/sql"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-const (
-	DB_USER     = "postgres"
-	DB_PASSWORD = "blance97"
-	DB_NAME     = "IOT"
-)
+type Data struct {
+	Temp              string
+	Absolute_Pressure string
+	Relative_Pressure string
+	Humidity          string
+	Rain_Sensor_1     string
+	Rain_Sensor_2     string
+	Light_Sensor      string
+}
 
-func initDB() *sql.DB {
-	dbinfo := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
-		DB_USER, DB_PASSWORD, DB_NAME)
-	db, err := sql.Open("postgres", dbinfo)
-	checkErr(err)
-	//defer db.Close()
+func InitDB(filepath string) *sql.DB {
+	db, err := sql.Open("sqlite3", filepath)
+	log.Println(filepath)
+	if err != nil {
+		log.Print(err)
+	}
+	if db == nil {
+		log.Print("db nil")
+	}
 	log.Println("Successfull opened db")
 	return db
 }
+
 func createSchema() {
+
 	sql_table := `
-  CREATE TABLE userinfo
-(
-		index SERIAL PRIMARY KEY,
-    Temp  INT NOT NULL,
-		Absolute_Pressure FLOAT NOT NULL,
-		Relative_Pressure FLOAT NOT NULL,
-		Humidity FLOAT NOT NULL,
-		Rain_Sensor_1 FLOAT NOT NULL,
-		Rain_Sensor_2 FLOAT NOT NULL,
-		Light_Sensor  FLOAT NOT NULL
-)
-WITH (OIDS=FALSE);
+	CREATE TABLE IF NOT EXISTS Data(
+    Temp  TEXT NOT NULL,
+		Absolute_Pressure TEXT NOT NULL,
+		Relative_Pressure TEXT NOT NULL,
+		Humidity TEXT NOT NULL,
+		Rain_Sensor_1 TEXT NOT NULL,
+		Rain_Sensor_2 TEXT NOT NULL,
+		Light_Sensor  TEXT NOT NULL
+);
 `
-	_, err2 := db.Exec(sql_table)
-	if err2 != nil {
-		log.Print(err2)
+	_, err := db.Exec(sql_table)
+	if err != nil {
+		log.Print(err)
 	}
 }
 func storeCSVData() {
@@ -52,8 +60,28 @@ func storeCSVData() {
 	_, err := db.Exec(sql_stmt)
 	checkErr(err)
 }
+func clearData() {
+	fmt.Println("Clearing Data")
+	_, err := db.Exec("delete from Data")
+	checkErr(err)
+}
 
 func CopyPlaces(filename string) {
+	sql_stmt := `
+	INSERT OR REPLACE INTO Data(
+    Temp,
+    Absolute_Pressure,
+    Relative_Pressure,
+		Humidity,
+		Rain_Sensor_1,
+		Rain_Sensor_2,
+		Light_Sensor
+	)values(?, ?, ?, ?, ?,?,?)
+	`
+	stmt, err := db.Prepare(sql_stmt)
+	if err != nil {
+		log.Print(err)
+	}
 	csvfile, err := os.Open(filename)
 
 	if err != nil {
@@ -77,62 +105,54 @@ func CopyPlaces(filename string) {
 	// sanity check, display to standard output
 	for _, each := range rawCSVdata {
 		fmt.Printf("Absolute_Pressure : %s,  Absolute_Pressure : %s, Relative_Pressure : %s, Humidity : %s, Rain_Sensor_1 : %s, Rain_Sensor_2 : %s, Light_Sensor : %s\n", each[0], each[1], each[2], each[3], each[4], each[5], each[6])
-
-		//	err = db.QueryRow("INSERT INTO userinfo(Absolute_Pressure,Absolute_Pressure,Relative_Pressure,Humidity,Rain_Sensor_1,Rain_Sensor_2,Light_Sensor) VALUES($1,
-		//checkErr(err)
+		c := Data{
+			Temp:              each[0],
+			Absolute_Pressure: each[1],
+			Relative_Pressure: each[2],
+			Humidity:          each[3],
+			Rain_Sensor_1:     each[4],
+			Rain_Sensor_2:     each[5],
+			Light_Sensor:      each[6],
+		}
+		if _, err := stmt.Exec(c.Temp, c.Absolute_Pressure, c.Relative_Pressure, c.Humidity, c.Rain_Sensor_1, c.Rain_Sensor_2, c.Light_Sensor); err != nil {
+			log.Println(err)
+		}
 	}
 
 }
-
-// 	fmt.Println("# Inserting values")
-//
-// 	var lastInsertId int
-// 	err = db.QueryRow("INSERT INTO userinfo(username,departname,created) VALUES($1,$2,$3) returning uid;", "astaxie", "研发部门", "2012-12-09").Scan(&lastInsertId)
-// 	checkErr(err)
-// 	fmt.Println("last inserted id =", lastInsertId)
-//
-// 	fmt.Println("# Updating")
-// 	stmt, err := db.Prepare("update userinfo set username=$1 where uid=$2")
-// 	checkErr(err)
-//
-// 	res, err := stmt.Exec("astaxieupdate", lastInsertId)
-// 	checkErr(err)
-//
-// 	affect, err := res.RowsAffected()
-// 	checkErr(err)
-//
-// 	fmt.Println(affect, "rows changed")
-//
-// 	fmt.Println("# Querying")
-// 	rows, err := db.Query("SELECT * FROM userinfo")
-// 	checkErr(err)
-//
-// 	for rows.Next() {
-// 		var uid int
-// 		var username string
-// 		var department string
-// 		var created time.Time
-// 		err = rows.Scan(&uid, &username, &department, &created)
-// 		checkErr(err)
-// 		fmt.Println("uid | username | department | created ")
-// 		fmt.Printf("%3v | %8v | %6v | %6v\n", uid, username, department, created)
-// 	}
-//
-// 	fmt.Println("# Deleting")
-// 	stmt, err = db.Prepare("delete from userinfo where uid=$1")
-// 	checkErr(err)
-//
-// 	res, err = stmt.Exec(lastInsertId)
-// 	checkErr(err)
-//
-// 	affect, err = res.RowsAffected()
-// 	checkErr(err)
-//
-// 	fmt.Println(affect, "rows changed")
-// }
-
+func getData(data string) []Data {
+	rows, err := db.Query("SELECT * FROM Data")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	var result []Data
+	for rows.Next() {
+		item := Data{}
+		err2 := rows.Scan(&item.Temp, &item.Absolute_Pressure, &item.Relative_Pressure, &item.Humidity, &item.Rain_Sensor_1, &item.Rain_Sensor_2, &item.Light_Sensor)
+		if err2 != nil {
+			log.Println("Error scanning Time in ApptTypeTime")
+		}
+		result = append(result, item)
+	}
+	return result
+}
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
+func getJSON(r *http.Request) map[string]interface{} {
+	var data map[string]interface{}
+
+	//	log.Printf("getJSON:\tBegin execution")
+	if r.Body == nil {
+		log.Printf("No Request Body")
+	}
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		log.Printf("Error Decoding JSON")
+	}
+	defer r.Body.Close()
+	return data
+} //decode JSON

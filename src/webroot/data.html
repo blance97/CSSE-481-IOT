@@ -11,6 +11,7 @@
     <!--  Scripts-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script src="js/data.js"></script>
     <style>
         table {
             font-family: arial, sans-serif;
@@ -37,18 +38,19 @@
             <ul class="nav navbar-nav">
                 <li><a href="/">Home<span class="sr-only"></span></a></li>
                 <li class="active"><a href="/data.html">Data<span class="sr-only">(current)</span></a></li>
-                <li><a href="/data.html">Comparison<span class="sr-only">(current)</span></a></li>
+                <li><a href="/Comparison.html">Comparison<span class="sr-only">(current)</span></a></li>
             </ul>
         </nav>
     </div>
     <h1>Upload Data:</h1>
-    <form enctype="multipart/form-data" action="/upload/data" method="post">
-        <input id="image-file" type="file" />
-        <input type="submit" value="Submit">
+    <form action="/uploadData" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" accept=".csv" />
+        <input type="submit">
     </form>
     <center>
         <h1>Raw Data</h1></center>
-    <table>
+        <Table id="hi"></Table>
+    <!-- <table>
         <tr>
             <th>Date</th>
             <th>Temperature</th>
@@ -68,7 +70,7 @@
             </tr>
             </td>
         </tr>
-    </table>
+    </table> -->
 
 
 </body>

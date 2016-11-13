@@ -1,34 +1,31 @@
 $(function() {
-$("#add-btn").click(function() {
- 	    mychart.addData([40, 60], "August");
-});
-
-var data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-        {
-            label: "My First dataset",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [65, 59, 80, 81, 16, 55, 40]
-        },
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: [28, 48, 40, 19, 86, 27, 90]
+    var request = $.ajax({
+        type: 'GET',
+        url: '/listFile',
+        async: false,
+        success: function(data) {
+            var obj = jQuery.parseJSON(data)
+            for (i = 0; i < obj.Rooms.length; i++) {
+                $('#files').append($('<option>', {
+                    value: obj.Rooms[i],
+                    text: obj.Rooms[i]
+                }));
+            }
         }
-    ]
-};
-var cv = $("#canvas").get(0).getContext("2d");
+    });
 
-var mychart = new Chart(cv).Line(data);
 });
+
+
+function loadData1() {
+      var datas = $("#files").val()
+    var request = $.ajax({
+        type: 'GET',
+        url: '/getFile/?data=' + datas,
+        async: false,
+        success: function(data) {
+          console.log("Changed data");
+
+        }
+    });
+}
