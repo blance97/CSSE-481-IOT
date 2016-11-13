@@ -7,8 +7,8 @@
 HTML,CSS,Javascript. (Possibly add in some bootstrap or materialize)
 
 **Middle Tier:**
-NodeJS with express framework(works well with mongoDB).
+Golange
 
 **Data Tier:**
-MongoDB
+Sqlite3
 
