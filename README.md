@@ -7,7 +7,7 @@
 HTML,CSS,Javascript. (Possibly add in some bootstrap or materialize)
 
 **Middle Tier:**
-Golange
+Golang
 
 **Data Tier:**
 Sqlite3
